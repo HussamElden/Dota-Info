@@ -21,20 +21,30 @@ android {
             isMinifyEnabled = false
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
     buildFeatures {
         compose = true
-        viewBinding = true
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.0"
+        kotlinCompilerExtensionVersion = Compose.composeVersion
+    }
+    packagingOptions {
+        exclude("META-INF/AL2.0")
+        exclude("META-INF/LGPL2.1")
     }
 }
 
 dependencies{
+    implementation(project(Modules.core))
+    implementation(project(Modules.heroDomain))
+    implementation(project(Modules.heroInteractors))
+
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.appCompat)
     implementation(AndroidX.lifecycleVmKtx)
