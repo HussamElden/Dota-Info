@@ -40,7 +40,7 @@ android {
     }
 }
 
-dependencies{
+dependencies {
     implementation(project(Modules.core))
     implementation(project(Modules.heroDomain))
     implementation(project(Modules.heroInteractors))
@@ -57,14 +57,6 @@ dependencies{
     implementation(Compose.hiltNavigation)
 
     implementation(Google.material)
+
+    implementation(SqlDelight.androidDriver)
 }
-
-
-
-
-
-
-
-
-
-

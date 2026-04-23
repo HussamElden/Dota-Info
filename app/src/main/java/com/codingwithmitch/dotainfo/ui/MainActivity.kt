@@ -20,6 +20,7 @@ import com.example.core.ProgressBarState
 import com.example.core.UIComponent
 import com.example.hero_domain.Hero
 import com.example.hero_interactors.HeroInteractors
+import com.squareup.sqldelight.android.AndroidSqliteDriver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.launchIn
@@ -32,7 +33,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val getHeros= HeroInteractors.build().getHeros
+        val getHeros= HeroInteractors.build(
+            sqlDriver = AndroidSqliteDriver(
+                schema = HeroInteractors.schema,
+                context = this,
+                name = HeroInteractors.dbName
+            )
+        ).getHeros
         val logger= Logger("MainActivity")
         getHeros.execute().onEach {datastate->
             when(datastate){

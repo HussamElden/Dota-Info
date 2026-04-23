@@ -1,4 +1,4 @@
-package com.example.hero_datasource_test
+package com.example.hero_domain
 
 import org.junit.Test
 
