@@ -1,6 +1,9 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    kotlin("kapt")
+    id("dagger.hilt.android.plugin")
+
 }
 
 android {
@@ -25,11 +28,11 @@ android {
         compose = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     composeOptions {
         kotlinCompilerExtensionVersion = Compose.composeVersion
@@ -44,10 +47,13 @@ dependencies {
     implementation(project(Modules.core))
     implementation(project(Modules.heroDomain))
     implementation(project(Modules.heroInteractors))
+    implementation(project(Modules.ui_heroList))
 
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.appCompat)
     implementation(AndroidX.lifecycleVmKtx)
+
+    implementation(Coil.coil)
 
     implementation(Compose.activity)
     implementation(Compose.ui)
@@ -57,6 +63,9 @@ dependencies {
     implementation(Compose.hiltNavigation)
 
     implementation(Google.material)
+
+    implementation(Hilt.android)
+    kapt(Hilt.compiler)
 
     implementation(SqlDelight.androidDriver)
 }

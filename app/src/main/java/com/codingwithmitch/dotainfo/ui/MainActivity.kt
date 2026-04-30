@@ -3,36 +3,37 @@ package com.codingwithmitch.dotainfo.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import coil.ImageLoader
+import com.codingwithmitch.dotainfo.R
 import com.codingwithmitch.dotainfo.ui.theme.DotaInfoTheme
 import com.example.core.DataState
 import com.example.core.Logger
-import com.example.core.ProgressBarState
 import com.example.core.UIComponent
-import com.example.hero_domain.Hero
 import com.example.hero_interactors.HeroInteractors
+import com.example.ui_herolist.ui.HeroList
+import com.example.ui_herolist.ui.HeroListState
 import com.squareup.sqldelight.android.AndroidSqliteDriver
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val heros: MutableState<List<Hero>> = mutableStateOf(emptyList())
-    private val progressBarState:MutableState<ProgressBarState> = mutableStateOf(ProgressBarState.Idle)
+    private val state: MutableState<HeroListState> = mutableStateOf(HeroListState())
+    private lateinit var imageLoader: ImageLoader
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        imageLoader= ImageLoader.Builder(this)
+            .error(R.drawable.error_image)
+            .placeholder(R.drawable.white_background)
+            .availableMemoryPercentage(0.25)
+            .crossfade(true)
+            .build()
         val getHeros= HeroInteractors.build(
             sqlDriver = AndroidSqliteDriver(
                 schema = HeroInteractors.schema,
@@ -46,7 +47,6 @@ class MainActivity : ComponentActivity() {
                 is DataState.Response -> {
                   when(datastate.uiComponent){
                         is UIComponent.Dialog -> {
-
                             logger.log("Dialog: ${(datastate.uiComponent as UIComponent.Dialog).title} - ${(datastate.uiComponent as UIComponent.Dialog).description}")
                         }
                         is UIComponent.None -> {
@@ -56,28 +56,22 @@ class MainActivity : ComponentActivity() {
                 }
                 is DataState.Data -> {
                     datastate.data?.let { data->
-                        heros.value = data
+                        state.value=state.value.copy(heroList = data)
                         logger.log("Data: ${data.size} heros")
                     }
                 }
                 is DataState.Loading -> {
                     logger.log("Loading: ${datastate.progressBarState}")
-                    progressBarState.value = datastate.progressBarState
+                    state.value = state.value.copy(progressBarState = datastate.progressBarState)
                 }
             }
         }.launchIn(CoroutineScope(IO))
         setContent {
             DotaInfoTheme {
-                Box(modifier = Modifier.fillMaxSize()){
-                    LazyColumn {
-                       items(heros.value){ hero ->
-                           Text(text = hero.localizedName)
-                       }
-                    }
-                    if (progressBarState.value is ProgressBarState.Loading){
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                    }
-                }
+                HeroList(
+                    state =state.value,
+                    imageLoader = imageLoader
+                )
             }
         }
     }

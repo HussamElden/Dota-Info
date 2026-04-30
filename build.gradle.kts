@@ -8,11 +8,21 @@ buildscript {
         classpath(Build.androidBuildTools)
         classpath(Build.kotlinGradlePlugin)
         classpath(Build.sqlDelightGradlePlugin)
+        classpath(Build.hiltAndroid)
         classpath(Build.ktlintGradlePlugin)
     }
 }
 
 subprojects {
+    configurations.configureEach {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin" && requested.name.startsWith("kotlin-stdlib")) {
+                useVersion(Kotlin.version)
+                because("Keep Kotlin stdlib aligned with the project Kotlin plugin version")
+            }
+        }
+    }
+
     val makeKtlintNonBlocking = {
         // Keep ktlint checks visible, but do not fail the build on violations.
 
