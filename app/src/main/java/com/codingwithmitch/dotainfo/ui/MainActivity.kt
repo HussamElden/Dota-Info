@@ -22,26 +22,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private lateinit var imageLoader: ImageLoader
+    @Inject
+    lateinit var imageLoader: ImageLoader
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        imageLoader= ImageLoader.Builder(this)
-            .error(R.drawable.error_image)
-            .placeholder(R.drawable.white_background)
-            .availableMemoryPercentage(0.25)
-            .crossfade(true)
-            .build()
-        val getHeros= HeroInteractors.build(
-            sqlDriver = AndroidSqliteDriver(
-                schema = HeroInteractors.schema,
-                context = this,
-                name = HeroInteractors.dbName
-            )
-        ).getHeros
 
         setContent {
             DotaInfoTheme {

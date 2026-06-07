@@ -13,15 +13,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class HeroListViewModel
 @Inject
 constructor(
-    private val getHeros: GetHeros
+    private val getHeros: GetHeros,
+    @param:Named("heroListLogger") private val logger: Logger
 ): ViewModel() {
      val state: MutableState<HeroListState> = mutableStateOf(HeroListState())
-    val logger= Logger("MainActivity")
 
     init {
         getHeros()
